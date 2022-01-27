@@ -1,0 +1,266 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.offline as py
+import plotly.graph_objs as go
+from sklearn.model_selection import train_test_split
+%matplotlib inline
+
+
+data = pd.read_csv("D:\\Internship data science\\diabetes.csv")
+print(data)
+
+display(data.info(),data.head())
+
+data.describe()
+
+data.columns
+
+data.info()
+
+def correlation_plot():
+    #correlation
+    correlation = data.corr()
+    
+
+
+    #tick labels
+    matrix_cols = correlation.columns.tolist()
+    #convert to array
+    corr_array  = np.array(correlation)
+    trace = go.Heatmap(z = corr_array,
+                       x = matrix_cols,
+                       y = matrix_cols,
+                       colorscale='Viridis',
+                       colorbar   = dict() ,
+                      )
+    layout = go.Layout(dict(title = 'Correlation Matrix for variables',
+                            #autosize = False,
+                            #height  = 1400,
+                            #width   = 1600,
+                            margin  = dict(r = 0 ,l = 100,
+                                           t = 0,b = 100,
+                                         ),
+                            yaxis   = dict(tickfont = dict(size = 9)),
+                            xaxis   = dict(tickfont = dict(size = 9)),
+                           )
+                      )
+    fig = go.Figure(data = [trace],layout = layout)
+    py.iplot(fig)
+    correlation_plot()
+    
+    
+D = data[(data['Outcome'] != 0)]
+H = data[(data['Outcome'] == 0)]
+
+#------------COUNT-----------------------
+def target_count():
+    trace = go.Bar( x = data['Outcome'].value_counts().values.tolist(), 
+                    y = ['healthy','diabetic' ], 
+                    orientation = 'h', 
+                    text=data['Outcome'].value_counts().values.tolist(), 
+                    textfont=dict(size=20),
+                    textposition = 'auto',
+                    opacity = 0.8,marker=dict(
+                    color=['red', 'gold'],
+                    line=dict(color='#000000',width=1.5)))
+
+    layout = dict(title =  'Count of Outcome variable')
+
+    fig = dict(data = [trace], layout=layout)
+    py.iplot(fig)
+
+#------------PERCENTAGE-------------------
+def target_percent():
+    trace = go.Pie(labels = ['healthy','diabetic'], values = data['Outcome'].value_counts(), 
+                   textfont=dict(size=15), opacity = 0.8,
+                   marker=dict(colors=['lightskyblue', 'gold'], 
+                               line=dict(color='#000000', width=1.5)))
+
+
+    layout = dict(title =  'Distribution of Outcome variable')
+
+    fig = dict(data = [trace], layout=layout)
+    py.iplot(fig)
+    
+    target_count()
+target_percent()
+import warnings
+warnings.simplefilter(action="ignore", category=FutureWarning)
+sns.countplot(data['Outcome'],)
+
+sns.heatmap(data)
+
+sns.heatmap(data)
+
+sns.displot(data['Pregnancies'])
+
+sns.displot(data['Glucose'])
+
+sns.displot(data['BloodPressure'])
+
+sns.displot(data['SkinThickness'])
+
+sns.displot(data['Insulin'])
+
+sns.displot(data['BMI'])
+
+sns.displot(data['DiabetesPedigreeFunction'])
+
+sns.pairplot(data,hue='Outcome')
+
+import warnings
+warnings.simplefilter(action="ignore", category=FutureWarning)
+
+
+sns.scatterplot(data['BloodPressure'],data['Glucose'],hue=data['Outcome'])
+
+sns.scatterplot(data['SkinThickness'],data['Glucose'],hue=data['Outcome'])
+
+sns.scatterplot(data['BMI'],data['Glucose'],hue=data['Outcome'])
+
+sns.scatterplot(data['Age'],data['Glucose'],hue=data['Outcome'])
+
+sns.scatterplot(data['BMI'],data['BloodPressure'],hue=data['Outcome'])
+
+sns.scatterplot(data['Insulin'],data['BloodPressure'],hue=data['Outcome'])
+
+sns.scatterplot(data['Age'],data['BloodPressure'],hue=data['Outcome'])
+sns.scatterplot(data['Age'],data['SkinThickness'],hue=data['Outcome'])
+sns.scatterplot(data['BMI'],data['Age'],hue=data['Outcome'])
+
+sns.scatterplot(data['Age'],data['Insulin'],hue=data['Outcome'])
+
+X = data.drop('Outcome', axis=1)
+y = data['Outcome']
+
+X_train,X_test,y_train,y_test = train_test_split(X,y)
+
+y_train.head()
+
+dataset_new = data
+
+# Count of NaN
+dataset_new.isnull().sum()
+
+# Replacing NaN with mean values
+dataset_new["Glucose"].fillna(dataset_new["Glucose"].mean(), inplace = True)
+dataset_new["BloodPressure"].fillna(dataset_new["BloodPressure"].mean(), inplace = True)
+dataset_new["SkinThickness"].fillna(dataset_new["SkinThickness"].mean(), inplace = True)
+dataset_new["Insulin"].fillna(dataset_new["Insulin"].mean(), inplace = True)
+dataset_new["BMI"].fillna(dataset_new["BMI"].mean(), inplace = True)
+
+# Feature scaling using MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler
+sc = MinMaxScaler(feature_range = (0, 1))
+dataset_scaled = sc.fit_transform(dataset_new)
+
+dataset_scaled = pd.DataFrame(dataset_scaled)
+
+# Selecting features - [Glucose, Insulin, BMI, Age]
+X = dataset_scaled.iloc[:, [1, 4, 5, 7]].values
+Y = dataset_scaled.iloc[:, 8].values
+
+# Splitting X and Y
+from sklearn.model_selection import train_test_split
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size = 0.20, random_state = 42, stratify = dataset_new['Outcome'] )
+
+# Checking dimensions
+print("X_train shape:", X_train.shape)
+print("X_test shape:", X_test.shape)
+print("Y_train shape:", Y_train.shape)
+print("Y_test shape:", Y_test.shape)
+
+# Logistic Regression Algorithm
+from sklearn.linear_model import LogisticRegression
+logreg = LogisticRegression(random_state = 42)
+logreg.fit(X_train, Y_train)
+
+# Plotting a graph for n_neighbors 
+pd.Series(dtype='float64')
+
+from sklearn import metrics
+from sklearn.neighbors import KNeighborsClassifier
+
+X_axis = list(range(1, 31))
+acc = pd.Series()
+x = range(1,31)
+
+for i in list(range(1, 31)):
+    knn_model = KNeighborsClassifier(n_neighbors = i) 
+    knn_model.fit(X_train, Y_train)
+    prediction = knn_model.predict(X_test)
+    acc = acc.append(pd.Series(metrics.accuracy_score(prediction, Y_test)))
+plt.plot(X_axis, acc)
+plt.xticks(x)
+plt.title("Finding best value for n_estimators")
+plt.xlabel("n_estimators")
+plt.ylabel("Accuracy")
+plt.grid()
+plt.show()
+print('Highest value: ',acc.values.max())
+
+# K nearest neighbors Algorithm
+from sklearn.neighbors import KNeighborsClassifier
+knn = KNeighborsClassifier(n_neighbors = 24, metric = 'minkowski', p = 2)
+knn.fit(X_train, Y_train)
+
+# Support Vector Classifier Algorithm
+from sklearn.svm import SVC
+svc = SVC(kernel = 'linear', random_state = 42)
+svc.fit(X_train, Y_train)
+
+# Naive Bayes Algorithm
+from sklearn.naive_bayes import GaussianNB
+nb = GaussianNB()
+nb.fit(X_train, Y_train)
+
+# Decision tree Algorithm
+from sklearn.tree import DecisionTreeClassifier
+dectree = DecisionTreeClassifier(criterion = 'entropy', random_state = 42)
+dectree.fit(X_train, Y_train)
+
+# Random forest Algorithm
+from sklearn.ensemble import RandomForestClassifier
+ranfor = RandomForestClassifier(n_estimators = 11, criterion = 'entropy', random_state = 42)
+ranfor.fit(X_train, Y_train)
+
+# Making predictions on test dataset
+Y_pred_logreg = logreg.predict(X_test)
+Y_pred_knn = knn.predict(X_test)
+Y_pred_svc = svc.predict(X_test)
+Y_pred_nb = nb.predict(X_test)
+Y_pred_dectree = dectree.predict(X_test)
+Y_pred_ranfor = ranfor.predict(X_test)
+
+
+# Evaluating using accuracy_score metric
+from sklearn.metrics import accuracy_score
+accuracy_logreg = accuracy_score(Y_test, Y_pred_logreg)
+accuracy_knn = accuracy_score(Y_test, Y_pred_knn)
+accuracy_svc = accuracy_score(Y_test, Y_pred_svc)
+accuracy_nb = accuracy_score(Y_test, Y_pred_nb)
+accuracy_dectree = accuracy_score(Y_test, Y_pred_dectree)
+accuracy_ranfor = accuracy_score(Y_test, Y_pred_ranfor)
+# Accuracy on test set
+print("Logistic Regression: " + str(accuracy_logreg * 100))
+print("K Nearest neighbors: " + str(accuracy_knn * 100))
+print("Support Vector Classifier: " + str(accuracy_svc * 100))
+print("Naive Bayes: " + str(accuracy_nb * 100))
+print("Decision tree: " + str(accuracy_dectree * 100))
+print("Random Forest: " + str(accuracy_ranfor * 100))
+
+# Confusion matrix
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(Y_test, Y_pred_knn)
+cm
+
+# Heatmap of Confusion matrix
+sns.heatmap(pd.DataFrame(cm), annot=True)
+
+# Classification report
+from sklearn.metrics import classification_report
+print(classification_report(Y_test, Y_pred_knn))
+
+# Thank you..!
